@@ -1,32 +1,37 @@
 import sqlite3
 import functools
+from datetime import datetime  # Include datetime for timestamp logging
 
+# Decorator to log SQL queries along with timestamps
 def log_queries():
-    """
-    A decorator to log the SQL queries executed by any function.
-    """
     def decorator(func):
-        @functools.wraps(func)
+        @functools.wraps(func)  # Preserve the original function's metadata
         def wrapper(*args, **kwargs):
-            # Assuming the first argument to the function is the query
-            query = args[0] if args else kwargs.get('query', 'Unknown query')
-            print(f"Executing SQL Query: {query}")
-            result = func(*args, **kwargs)
-            return result
+            # Log the query and timestamp
+            if args:
+                timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                print(f"[{timestamp}] Executing SQL Query: {args[0]}")
+            else:
+                print("No SQL query provided.")
+            # Execute the original function
+            return func(*args, **kwargs)
         return wrapper
     return decorator
 
-@log_queries()
+@log_queries()  # Apply the decorator
 def fetch_all_users(query):
     """
-    Fetch all users from the database based on the query.
+    Connects to the database, executes the query, 
+    fetches all rows, and then closes the connection.
     """
-    conn = sqlite3.connect('users.db')
-    cursor = conn.cursor()
-    cursor.execute(query)
-    results = cursor.fetchall()
-    conn.close()
-    return results
+    conn = sqlite3.connect('users.db')  # Connect to the SQLite database
+    cursor = conn.cursor()  # Create a cursor object
+    cursor.execute(query)  # Execute the SQL query
+    results = cursor.fetchall()  # Fetch all results
+    conn.close()  # Close the connection
+    return results  # Return the results
 
-# Fetch users while logging the query
+# Fetch users while logging the query and timestamp
 users = fetch_all_users(query="SELECT * FROM users")
+print(users)
+
