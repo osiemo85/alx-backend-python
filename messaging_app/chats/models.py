@@ -20,10 +20,16 @@ class User(AbstractUser):
         default='guest',
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    password = models.CharField(max_length=128, null=False)
 
     # Override username field for authentication
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+    def set_password(self, raw_password):
+        """
+        Hash the raw password and store it in the password field.
+        """
+        super().set_password(raw_password)
 
     def __str__(self):
         return self.email
