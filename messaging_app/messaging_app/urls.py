@@ -17,7 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+# urlpatterns = [
+#     path('admin/', admin.site.urls),
+#       path('api/', include('chats.urls')),
+# ]
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-      path('api/', include('chats.urls')),
+    path('api/', include('chats.urls')),  # Include the chat app URLs under /api/
+    path('api-auth/', include('rest_framework.urls')),  # Include the auth URLs for login/logout
 ]
