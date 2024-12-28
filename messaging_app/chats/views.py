@@ -1,5 +1,4 @@
-from django.shortcuts import render
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import Conversation, Message
@@ -12,6 +11,8 @@ class ConversationViewSet(viewsets.ModelViewSet):
     """
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['participants__username']  # Allow searching by participant usernames
 
     @action(detail=False, methods=['post'])
     def create_conversation(self, request):
@@ -41,6 +42,8 @@ class MessageViewSet(viewsets.ModelViewSet):
     """
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['sent_at']  # Allow ordering by the sent date
 
     @action(detail=True, methods=['post'])
     def send_message(self, request, pk=None):
